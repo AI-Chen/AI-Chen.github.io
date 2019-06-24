@@ -1,136 +1,40 @@
-# panthera-jekyll
+# brume
 
-[![Gem Version](https://badge.fury.io/rb/panthera-jekyll.svg)](https://badge.fury.io/rb/panthera-jekyll)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](code-of-conduct.md)
+I am not a designer so I cannot impress you with breathtaking Jekyll themes, but brume is something that just came to my mind and I had to build it. It is a clean and simple theme, which has an index page that lists all your blog posts divided by the year, a single post page and a layout for any additional pages you might need.
 
-*panthera-jekyll is a Jekyll theme for GitHub Pages and Jekyll sites. You can [preview the theme to see what it looks like](https://demothemes.github.io/panthera-jekyll), or even [use it today](#usage).*
+This is how the "Home" page looks like.
 
-<div style="text-align: center;">
-  <img src="/screenshot.png" alt="panthera-jekyll" style="width: 100%; max-width: 750px;" />
-</div>
+![Home](https://raw.githubusercontent.com/aigarsdz/brume/master/screenshots/home.png)
 
-## Installation
+And this is a single post.
 
-### Building a Jekyll Site
+![Post](https://raw.githubusercontent.com/aigarsdz/brume/master/screenshots/post_1.png)
 
-Add this line to your Jekyll site's `Gemfile`:
+![Post. More content examples.](https://raw.githubusercontent.com/aigarsdz/brume/master/screenshots/post_2.png)
 
-```ruby
-gem "panthera-jekyll"
-```
+## Usage
 
-And add this line to your Jekyll site's `_config.yml`:
+Brume can be installed just like any other Jekyll theme as described [here](https://jekyllrb.com/docs/themes/#installing-a-theme),
+but there are a couple of additional steps you have to take.
 
-```yaml
-theme: panthera-jekyll
-```
+1. All the links are defined in a file *_data/links.yml*, therefore you'll have to create a *_data*
+directory and put this file there in order for navigation to be displayed.
+2. Brume uses `home` layout for the home page (like the default Jekyll theme). All you need to do
+is create an *index.html* or *index.md* file with `layout: home`. If you want the home page to be
+listed in the navigation you have to add `title` to it's front matter that matches
+the title you used for the home page link in the *links.yml* file. Titles are used to indicate
+the current page.
 
-And then execute:
+## Theme customization
 
-    $ bundle
+This theme has 4 predefined colors that can be used for links:
 
-Or install it yourself as:
+- azul
+- ruby
+- amber
+- avocado
 
-    $ gem install panthera-jekyll
+By default it uses *avocado*, but if you want to select another one just change the `color_scheme` setting in
+*_config.yml* file.
 
-### Building a Github Page
-
-Add this line to your Github Page's `_config.yml`:
-
-```yaml
-remote_theme: christianezeani/panthera-jekyll
-```
-
-## Customizing
-
-### Configuration variables
-
-panthera-jekyll will respect the following variables, if set in your site's `_config.yml`:
-
-```yml
-title: [The title of your site or Profile Name]
-subtitle: [A brief subtitle or job title]
-description: [A short description of your site's purpose]
-```
-
-To configure side menu, set the following variables:
-
-```yml
-menu:
-  - text: [Menu text]
-    link: [Relative page link with the '/' prefix]
-    icon: [Menu Icon]
-```
-
-#### Example
-
-```yml
-menu:
-  - text: Portfolio
-    link: /
-    icon: ""
-
-  - text: Skills & Offers
-    link: /skills-and-offers
-    icon: ""
-```
-
-To configure social links, set the following variables:
-
-```yml
-social_icons:
-  - name: [Socialmedia title]
-    link: [Social link]
-    icon: [Icon class]
-```
-
-#### Example
-
-```yml
-social_icons:
-  - name: linkedin
-    link: https://www.linkedin.com/christianezeani
-    icon: fab fa-linkedin
-
-  - name: github
-    link: https://github.com/christianezeani
-    icon: fab fa-github-square
-```
-
-panthera-jekyll currently supports the following icons:
-
-* [FontAwesome](https://fontawesome.com) (version 5.9.0)
-
-Additionally, you may choose to set the following optional variables:
-
-```yml
-google_analytics: [Your Google Analytics tracking ID]
-```
-
-### Stylesheet
-
-If you'd like to add your own custom styles:
-
-1. Create a file called `/assets/css/style.scss` in your site
-
-2. Add the following content to the top of the file, exactly as shown:
-
-    ```scss
-    ---
-    ---
-
-    @import "panthera-jekyll";
-    ```
-
-3. Add any custom CSS (or Sass, including imports) you'd like immediately after the `@import` line
-
-*Note: If you'd like to change the theme's Sass variables, you must set new values before the `@import` line in your stylesheet.*
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/chrisitanezeani/panthera-jekyll. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-## License
-
-The theme is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
+Express your thoughts about brume on Twitter [@aigarsdz](http://twitter.com/aigarsdz), and help me make it better!

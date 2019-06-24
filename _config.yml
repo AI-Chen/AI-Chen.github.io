@@ -1,49 +1,13 @@
-defaults:
-  -
-    scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: default
+title: Brume
+author: Aigars Dzerviniks
+description: It's simple. It's easy to use. It's a Jekyll theme.
 
-title: Chen's Blog
-subtitle: Full-Stack Developer
+highlighter: null
+permalink: /:title
 
-# Side Menu Links
-menu:
-  - text: Portfolio
-    link: /
-    icon: ""
+url:
+baseurl:
 
-  - text: Skills & Offers
-    link: /skills-and-offers
-    icon: ""
-
-  - text: Contact Me
-    link: /contact
-    icon: ""
-
-  - text: My Resume
-    link: /resume
-    icon: ""
-
-# Socialmedia Icons
-social_icons:
-  - name: linkedin
-    link: https://www.linkedin.com/christianezeani
-    icon: fab fa-linkedin
-
-  - name: github
-    link: https://github.com/christianezeani
-    icon: fab fa-github-square
-
-  - name: facebook
-    link: https://www.facebook.com/christian.ezeani.cyb
-    icon: fab fa-facebook-square
-
-  - name: twitter
-    link: https://www.twitter.com/christianezeani
-    icon: fab fa-twitter
-
-
-    
+# Custom options:
+# color_scheme: azul|ruby|amber|avocado
+# color_scheme: avocado
