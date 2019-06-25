@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Video example
+title: Efficient Ladder-style DenseNets for Semantic Segmentation of Large Images×Ü½á
 ---
 
 <iframe src="https://player.vimeo.com/video/214092083?badge=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
