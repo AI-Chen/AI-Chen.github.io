@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Efficient Ladder-style DenseNets for Semantic Segmentation of Large Images总结
+title: Efficient-Ladder-style-DenseNets总结
 ---
 
 <iframe src="https://player.vimeo.com/video/214092083?badge=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
