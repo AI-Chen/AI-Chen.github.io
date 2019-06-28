@@ -146,6 +146,7 @@ class CFM(nn.Module):
 > * *\__init__*:初始化forword函数中所必须用到的卷积、池化操作；<br><br>
 * *forward*:首先将低分辨率的输入做上采样，使其分辨率与高分变率表示一致。然后将二者进行连接（
 torch.cat）操作。随后将结果送入1×1的卷积中进行特征的优化与调整，其结果接入BN层与Relu函数。经过Relu处理后对其进行全局平均池化得到各个通道的权重。将权重与自身相乘，随后将相乘的结果与原始高分辨率输入求和得到最后的输出。
+
 ```
 class AMM(nn.Module):
     def __init__(self, in_size, out_size):
@@ -183,7 +184,7 @@ class AMM(nn.Module):
         out = multiply + input_high
         # ----------------------------------------------------------#
         return out
-
+```
 
 
 
@@ -219,6 +220,7 @@ class RefineBlock(nn.Module):
 *\_make_layer*:使用ResNet的Basicblock或者bottleblock作为特征提取块得到由浅入深的4层特征。
 
 ```
+
 class CAN(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000):
