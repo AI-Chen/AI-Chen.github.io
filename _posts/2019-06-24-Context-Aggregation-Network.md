@@ -41,17 +41,17 @@ title: Context Aggregation Network总结
 
 ----
 
-### 4、消融实验
-#### 4.1、 ISPRS Vaihingen数据集
+### 3、实验
+#### 3.1、 ISPRS Vaihingen数据集
 ![从低分辨率表示恢复高分辨率表示](../assets/images/CAN/CAN5.JPG)<br><br>
 ![从低分辨率表示恢复高分辨率表示](../assets/images/CAN/CAN6.JPG)<br><br>
-#### 4.2、 Potsdam数据集
+#### 3.2、 Potsdam数据集
 ![从低分辨率表示恢复高分辨率表示](../assets/images/CAN/CAN7.JPG)<br><br>
 ![从低分辨率表示恢复高分辨率表示](../assets/images/CAN/CAN8.JPG)<br><br>
 
 ----
 
-### 5、代码理解
+### 4、代码理解
 &emsp;&emsp;代码的开源地址：https://github.com/Spritea/Context-Aggregation-Network/blob/master/ptsemseg/models/CAN.py<br>
 &emsp;&emsp;我们以ResNet-18为特征提取网络的CAN-18模型进行理解。所涉及的类与函数包括：
 > * *CAN* 类：对CAN模型进行构建的类；<br><br>
@@ -65,7 +65,7 @@ title: Context Aggregation Network总结
 * *maybe_download* 函数：在models_urls提供地址上下载Imagenet数据集上的预训练参数；<br><br>
 * *models_urls*：Imagenet数据集上的预训练参数地址。
 
-#### 5.1、CFM类
+#### 4.1、CFM类
 > * *\__init__*:初始化forword函数中所必须用到的卷积、池化操作；<br><br>
 * *forward*:实现了并行卷积块各个分支的卷积操作以及全局池化操作。值得注意的是，在进行各分支连接前的各个卷积操作后都只接入BN层而不使用Relu激活。
 
@@ -142,10 +142,10 @@ class CFM(nn.Module):
 
 
 ```
-#### 5.2、AMM类
+#### 4.2、AMM类
 > * *\__init__*:初始化forword函数中所必须用到的卷积、池化操作；<br><br>
 * *forward*:首先将低分辨率的输入做上采样，使其分辨率与高分变率表示一致。然后将二者进行连接（
-torch.cat）操作。随后将结果送入1×1的卷积中进行特征的优化与调整，其结果接入BN层与Relu函数。经过Relu处理后对其进行全局平均池化得到各个通道的权重。将权重与自身相乘，随后将相乘的结果与原始高分辨率输入求和得到最后的输出。。
+torch.cat）操作。随后将结果送入1×1的卷积中进行特征的优化与调整，其结果接入BN层与Relu函数。经过Relu处理后对其进行全局平均池化得到各个通道的权重。将权重与自身相乘，随后将相乘的结果与原始高分辨率输入求和得到最后的输出。
 ```
 class AMM(nn.Module):
     def __init__(self, in_size, out_size):
@@ -184,13 +184,15 @@ class AMM(nn.Module):
         # ----------------------------------------------------------#
         return out
 
+
+
+
+#### 4.3、RefineBlock类
+
+> 这里值得注意的是最开始的1×1卷积后的输出的结果通道数都为512。同时最后一个3×3卷积后的结果直接与原始输入求和而不再接入BN层与Relu函数做处理。
+
+
 ```
-
-
-#### 5.3、RefineBlock类
-
-```
-
 class RefineBlock(nn.Module):
     def __init__(self, in_channel):
         super(RefineBlock, self).__init__()
@@ -209,13 +211,117 @@ class RefineBlock(nn.Module):
         out = x1 + x
 
         return out
-
-
 ```
 
 #### 5.3、CAN类
+> * *\__init__*:初始化forword函数中所必须用到的卷积、池化等操作；<br><br>
+* *forward*:是对CAN模型整个业务逻辑（在本文第2节中有明确的阐述）的定义。<br><br>
+*\_make_layer*:使用ResNet的Basicblock或者bottleblock作为特征提取块得到由浅入深的4层特征。
 
+```
+class CAN(nn.Module):
+
+    def __init__(self, block, layers, num_classes=1000):
+        super(CAN, self).__init__()
+        # self.do = nn.Dropout(p=0.5)
+
+        self.inplanes = 64
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
+                               bias=False)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.relu = nn.ReLU(inplace=True)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        self.layer1 = self._make_layer(block, 64, layers[0])
+        self.rb1_1 = RefineBlock(256)
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
+        self.rb2_1 = RefineBlock(512)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
+        self.rb3_1 = RefineBlock(1024)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        self.rb4_1 = RefineBlock(2048)
+        # self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        # self.fc = nn.Linear(512 * block.expansion, num_classes)
+        # only for >=res50
+
+        # self.CFM=CFM(2048,512)
+        self.CFM = CFM(512, 512)
+        self.rb4_2 = RefineBlock(512 * 5)
+
+        self.fuse43 = AMM(512, 512)
+        # self.post_proc43 = conv3x3_bn(512*2,512)
+        self.rb3_2 = RefineBlock(512)
+        self.fuse32 = AMM(512, 512)
+        self.rb2_2 = RefineBlock(512)
+        # self.post_proc32 = conv3x3_bn(512)
+        self.fuse21 = AMM(512, 512)
+        self.rb1_2 = RefineBlock(512)
+        # self.post_proc21 = conv3x3_bn(512)
+
+        self.class_conv = nn.Conv2d(512, num_classes, kernel_size=3, stride=1,
+                                    padding=1, bias=True)
+
+    def _make_layer(self, block, planes, blocks, stride=1):
+        downsample = None
+        if stride != 1 or self.inplanes != planes * block.expansion:
+            downsample = nn.Sequential(
+                conv1x1(self.inplanes, planes * block.expansion, stride),
+                nn.BatchNorm2d(planes * block.expansion),
+            )
+
+        layers = []
+        layers.append(block(self.inplanes, planes, stride, downsample))
+        self.inplanes = planes * block.expansion
+        for _ in range(1, blocks):
+            layers.append(block(self.inplanes, planes))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        ori_size = x.size()[2:]
+        # ----------------------------卷积操作----------------------#
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+        # ----------------------------------------------------------#
+
+        # -----------------------ResNet提取特征----------------------#
+        l1 = self.layer1(x)
+        l2 = self.layer2(l1)
+        l3 = self.layer3(l2)
+        l4 = self.layer4(l3)
+        # ----------------------------------------------------------#
+
+        # ---------------------RCM模块优化特征----------------------#
+        l1 = self.rb1_1(l1)
+        l2 = self.rb2_1(l2)
+        l3 = self.rb3_1(l3)
+        l4 = self.rb4_1(l4)
+        # ----------------------------------------------------------#
+
+        # -----------------CFM模块提取上下文信息--------------------#
+        l4 = self.CFM(l4)
+        l4 = self.rb4_2(l4)
+        # ----------------------------------------------------------#
+
+        # -----------------AAM模块进行上采样的融合------------------#
+        x_fuse43 = self.fuse43(l4, l3)
+        x_fuse43 = self.rb3_2(x_fuse43)
+        x_fuse32 = self.fuse32(x_fuse43, l2)
+        x_fuse32 = self.rb2_2(x_fuse32)
+        x_fuse21 = self.fuse21(x_fuse32, l1)
+        x_fuse21 = self.rb1_2(x_fuse21)
+        # ----------------------------------------------------------#
+
+        # --------------------------上采样输出----------------------#
+        # x_fuse21=self.do(x_fuse21)
+        x = self.class_conv(x_fuse21)
+        x = F.upsample(x, ori_size, mode='bilinear')
+        # ----------------------------------------------------------#
+        return x
+```
 
 ----
 
 ### 6、总结
+&emsp;&emsp;CAN具有类似于编码器的解码器(实质上我认为它就是优化了上下文提取机制与特征融合机制的U-Net)，具有高效的上下文信息聚合和基于注意力的多级特征融合。它由上下文融合模块（CFM），注意混合模块（AMM）和残余卷积模块（RCM）组成。 CFM由具有不同大小卷积核的并行卷积层和全局池化分支组成。并行卷积层将上下文信息与多个感知域聚合在一起。全局池化分支则引入了全局上下文信息。AMM利用通道智能注意机制来组合多级特征，并有选择地强调更具辨别力的特征。RCM改进了所有特征级别的特征。通过这些模块，CAN可以更有效地组合多级功能，并更广泛地利用功能。
