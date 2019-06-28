@@ -52,6 +52,169 @@ title: Context Aggregation Network总结
 ----
 
 ### 5、代码理解
+&emsp;&emsp;代码的开源地址：https://github.com/Spritea/Context-Aggregation-Network/blob/master/ptsemseg/models/CAN.py<br>
+&emsp;&emsp;我们以ResNet-18为特征提取网络的CAN-18模型进行理解。所涉及的类与函数包括：
+> * *CAN* 类：对CAN模型进行构建的类；<br><br>
+* *CAN18* 函数：实现加载Imagenet数据集上预训练参数的作用；<br><br>
+* *CFM* 类：对CFM模型进行定义的类；<br><br>
+* *RefineBlock* 类：对RCM进行定义的类；<br><br>
+* *Bottleneck* 与 *BasicBlock* 类:两个ResNet常用的特征提取块；<br><br>
+* *AMM* 类：对AMM模型进行定义的类；<br><br>
+* *conv3x3_bn* 函数：封装了一个默认步长为1的3×3卷积操作，并在其后接入BN层；<br><br>
+* *conv3x3* 与 *conv1x1* 函数：封装了一个默认步长为1的3×3卷积操作与默认步长为1的1×1卷积操作；<br><br>
+* *maybe_download* 函数：在models_urls提供地址上下载Imagenet数据集上的预训练参数；<br><br>
+* *models_urls*：Imagenet数据集上的预训练参数地址。
+
+#### 5.1、CFM类
+> * *\__init__*:初始化forword函数中所必须用到的卷积、池化操作；<br><br>
+* *forward*:实现了并行卷积块各个分支的卷积操作以及全局池化操作。值得注意的是，在进行各分支连接前的各个卷积操作后都只接入BN层而不使用Relu激活。
+
+```
+class CFM(nn.Module):
+    def __init__(self, in_channel, out_channel):
+        super(CFM, self).__init__()
+
+        self.c15_1 = nn.Conv2d(in_channel, out_channel, kernel_size=15, stride=1, padding=7, bias=False)
+        self.c11_1 = nn.Conv2d(in_channel, out_channel, kernel_size=11, stride=1, padding=5, bias=False)
+        self.c7_1 = nn.Conv2d(in_channel, out_channel, kernel_size=7, stride=1, padding=3, bias=False)
+        self.c3_1 = nn.Conv2d(in_channel, out_channel, kernel_size=3, stride=1, padding=1, bias=False)
+
+        self.c15_2 = nn.Conv2d(in_channel, out_channel, kernel_size=15, stride=1, padding=7, bias=False)
+        self.c11_2 = nn.Conv2d(in_channel, out_channel, kernel_size=11, stride=1, padding=5, bias=False)
+        self.c7_2 = nn.Conv2d(in_channel, out_channel, kernel_size=7, stride=1, padding=3, bias=False)
+        self.c3_2 = nn.Conv2d(in_channel, out_channel, kernel_size=3, stride=1, padding=1, bias=False)
+
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.c1_gpb = nn.Conv2d(in_channel, out_channel, kernel_size=1, bias=False)
+
+        self.bn = nn.BatchNorm2d(out_channel)
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        # -----------------获取输入图像的分辨率---------------------#
+        input_size = x.size()[2:]
+        # ----------------------------------------------------------#
+
+        #-----------------卷积核为15×15的分支----------------------#
+        x15_1 = self.c15_1(x)
+        x15_1 = self.bn(x15_1)
+        x15_1 = self.relu(x15_1)
+        x15_2 = self.c15_2(x15_1)
+        x15_2 = self.bn(x15_2)
+        # ----------------------------------------------------------#
+
+        # -----------------卷积核为11×11的分支----------------------#
+        x11_1 = self.c11_1(x)
+        x11_1 = self.bn(x11_1)
+        x11_1 = self.relu(x11_1)
+        x11_2 = self.c11_2(x11_1)
+        x11_2 = self.bn(x11_2)
+        # ----------------------------------------------------------#
+
+        # -----------------卷积核为7×7的分支----------------------#
+        x7_1 = self.c7_1(x)
+        x7_1 = self.bn(x7_1)
+        x7_1 = self.relu(x7_1)
+        x7_2 = self.c7_2(x7_1)
+        x7_2 = self.bn(x7_2)
+        # ----------------------------------------------------------#
+
+        # -----------------卷积核为3×3的分支----------------------#
+        x3_1 = self.c3_1(x)
+        x3_1 = self.bn(x3_1)
+        x3_1 = self.relu(x3_1)
+        x3_2 = self.c3_2(x3_1)
+        x3_2 = self.bn(x3_2)
+        # ----------------------------------------------------------#
+
+        # -----------------全局池化分支的分支----------------------#
+        x_gp = self.avg_pool(x)
+        x_gp = self.c1_gpb(x_gp)
+        x_gp = self.bn(x_gp)
+        x_gp = F.upsample(x_gp, size=input_size, mode='bilinear')
+        # ----------------------------------------------------------#
+
+        # ------------------------连接各个分支----------------------#
+        out = torch.cat([x_gp, x15_2, x11_2, x7_2, x3_2], dim=1)
+        # ----------------------------------------------------------#
+
+        return out
+
+
+```
+#### 5.2、AMM类
+> * *\__init__*:初始化forword函数中所必须用到的卷积、池化操作；<br><br>
+* *forward*:首先将低分辨率的输入做上采样，使其分辨率与高分变率表示一致。然后将二者进行连接（
+torch.cat）操作。随后将结果送入1×1的卷积中进行特征的优化与调整，其结果接入BN层与Relu函数。经过Relu处理后对其进行全局平均池化得到各个通道的权重。将权重与自身相乘，随后将相乘的结果与原始高分辨率输入求和得到最后的输出。。
+```
+class AMM(nn.Module):
+    def __init__(self, in_size, out_size):
+        super(AMM, self).__init__()
+        self.in_size = in_size
+        self.out_size = out_size
+        self.conv = nn.Conv2d(in_size*2, out_size, kernel_size=1, stride=1, bias=False)
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.bn=nn.BatchNorm2d(in_size)
+        self.relu=nn.ReLU(inplace=True)
+
+    def forward(self, input_low, input_high):
+        # -----------------高低分辨率输入的连接----------------------#
+        high_size = input_high.size()[2:]
+        # low channel usually > high channel
+        # if self.in_size != self.out_size:
+        #     input_low = self.conv(input_low)
+        upsample_low = F.upsample(input_low, high_size, mode='bilinear')
+        input_cat = torch.cat([upsample_low, input_high], dim=1)
+        # ----------------------------------------------------------#
+
+        # -----------------卷积、BN、Relu---------------------#
+        input_cat=self.conv(input_cat)
+        input_cat=self.bn(input_cat)
+        input_cat=self.relu(input_cat)
+        # ----------------------------------------------------------#
+
+        # -----------------通道注意机制-----------------------------#
+        gp = self.avg_pool(input_cat)
+        multiply=gp*input_cat
+        # ----------------------------------------------------------#
+
+        # -----------------与高分辨率输入求和-----------------------#
+        # out=multiply+input_cat
+        out = multiply + input_high
+        # ----------------------------------------------------------#
+        return out
+
+```
+
+
+#### 5.3、RefineBlock类
+
+```
+
+class RefineBlock(nn.Module):
+    def __init__(self, in_channel):
+        super(RefineBlock, self).__init__()
+        self.c1 = nn.Conv2d(in_channel, 512, kernel_size=1, stride=1, padding=0, bias=False)
+        self.c3_1 = nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn = nn.BatchNorm2d(512)
+        self.relu = nn.ReLU(inplace=True)
+        self.c3_2 = nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1, bias=False)
+
+    def forward(self, x):
+        x1 = self.c1(x)
+        x = self.c3_1(x1)
+        x = self.bn(x)
+        x = self.relu(x)
+        x = self.c3_2(x)
+        out = x1 + x
+
+        return out
+
+
+```
+
+#### 5.3、CAN类
+
 
 ----
 
