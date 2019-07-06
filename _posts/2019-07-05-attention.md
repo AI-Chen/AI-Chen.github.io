@@ -33,7 +33,7 @@ title:  Residual Attention Network for Image Classification总结
 > * trunk分支：与传统的卷积网络特征处理相似，通过多次卷积操作提取特征。<br><br>
 * mask分支：是注意力模块的核心部件，主要由一个buttom-up top-down的结构，这种结构也是一种encoder-decoder模型，形状与沙漏网络(hourglass network)相似。它的结构如下图，：
 
-![1\2](../assets/images/res_attention/res_attention7.JPG)
+![1\2](../assets/images/res_attention/res_attention7.JPG)<br><br>
 &emsp;&emsp;buttom-up部分：执行下采样(down sample)，多次进行最大池化操作扩大接受域，直到达到最低分辨率。作用效果是：产生低分辨率、强语义信息的特征图，从而收集整个图片的全局信息。<br>
 &emsp;&emsp;top-down部分：执行上采样(up sample)线性插值，直到特征图尺寸与输入时相等。作用效果是：扩展Bottom-up所产生的特征图，使其尺寸与输入Bottom-up前的特征图大小相同，从而对输入特征图的每个像素进行推理选择。
 所以，综上mask分支的作用总结如下：<br>
