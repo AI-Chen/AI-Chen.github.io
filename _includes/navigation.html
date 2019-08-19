@@ -7,3 +7,13 @@
   {% endif %}
   {% endfor %}
 </nav>
+
+<nav id="main-navigation1">
+  {% for link in site.data.links %}
+  {% if page.title == link.title %}
+  <a href="{{ link.url }}" title="{{ link.title }}" class="current">{{ link.title }}</a>
+  {% else %}
+  <a href="{{ link.url }}" title="{{ link.title }}">{{ link.title }}</a>
+  {% endif %}
+  {% endfor %}
+</nav>
