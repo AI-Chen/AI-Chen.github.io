@@ -1,7 +1,7 @@
-# Jekyll configuration
+﻿# Jekyll configuration
 
-name: Xixia
-description: Welcome to Xixia！
+name: Chen'blog
+description: Welcome my blog！
 
 # url is currently only used only for the RSS feed in feed.xml
 url: https://github.com/zxixia/jekyll-xixia
