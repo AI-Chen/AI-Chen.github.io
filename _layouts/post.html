@@ -3,7 +3,7 @@ layout: default
 ---
 {% assign trans = site.data.values[site.lan] %}
 <div class="well article">
-        <h2><a href="{{ site.baseurl}}{{ page.url }}">{{ page.title }}</a></h2>
+        <h2><a href="{{ page.url }}">{{ page.title }}</a></h2>
         <span class="post-date">
             {% assign date_format = site.date_format.title %}
             {{ page.date | date: date_format }}
@@ -13,7 +13,7 @@ layout: default
         {% if site.disqus != '' %}
         <p class="author"><a href="#disqus_thread" data-disqus-identifier="{{ page.url | slugify }}">Comments</a></p>
         {% elsif site.isso != '' %}
-        <p class="author"><a href="{{ site.baseurl }}{{ page.url }}{{ site.isso_suffix }}#isso-thread">Comments</a></p>
+        <p class="author"><a href="{{ page.url }}{{ site.isso_suffix }}#isso-thread">Comments</a></p>
         {% endif %}
     {% endif %}
     <div class="post-content">
@@ -27,14 +27,14 @@ layout: default
       {% assign categories_list = page.categories %}
       {% if categories_list.first[0] == null %}
         {% for category in categories_list %} 
-            <li class="icon-style"><a href="{{ site.baseurl }}/categories.html">
+            <li class="icon-style"><a href="/categories.html">
                 {{ category | join: "/" }} <span>({{ site.categories[category].size }})</span>
                 {% unless forloop.last %},{% endunless %}
             </a></li>
         {% endfor %}
       {% else %}
         {% for category in categories_list %} 
-            <li class="icon-style"><a href="{{ site.baseurl }}/categories.html">
+            <li class="icon-style"><a href="/categories.html">
                 {{ category[0] | join: "/" }} <span>/{{ category[1].size }})</span>
             </a></li>
         {% endfor %}
@@ -49,7 +49,7 @@ layout: default
       {% if tags_list.first[0] == null %}
         {% for tag in tags_list %} 
             <li class="icon-style">
-                <a href="{{ site.baseurl }}/tags.html">
+                <a href="/tags.html">
                 {{ tag }} <span>({{ site.tags[tag].size }})</span>
                 {% unless forloop.last %},{% endunless %}
                 </a>
@@ -58,7 +58,7 @@ layout: default
       {% else %}
         {% for tag in tags_list %} 
             <li class="icon-style">
-                <a href="{{ site.baseurl }}/tags.html">
+                <a href="/tags.html">
                     {{ tag[0] }} <span>({{ tag[1].size }})</span>
                     {% unless forloop.last %},{% endunless %}
                 </a>
@@ -84,9 +84,9 @@ layout: default
 </div>
 <div class="pagination">
     {% if page.next %}
-    <a class="btn btn-default" href="{{ site.baseurl}}{{ page.next.url }}" class="next">{{ trans.newer_post }}</a>
+    <a class="btn btn-default" href="{{ page.next.url }}" class="next">{{ trans.newer_post }}</a>
     {% endif %}
     {% if page.previous %}
-    <a class="btn btn-default" href="{{ site.baseurl}}{{ page.previous.url }}" class="previous">{{ trans.older_post }}</a>
+    <a class="btn btn-default" href="{{ page.previous.url }}" class="previous">{{ trans.older_post }}</a>
     {% endif %}
 </div>
