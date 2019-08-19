@@ -1,23 +1,29 @@
-# Site settings
-title: HyG
-email: gaohaoyang126@126.com
-description: 浩阳的博客 前端爱好者
-# > # this means to ignore newlines until "baseurl:"
-#   Write an awesome description for your new site here. You can edit this
-#   line in _config.yml. It will appear in your document head meta (for
-#   Google search results) and in your feed.xml site description.
+# Jekyll configuration
 
-# baseurl: "" # the subpath of your site, e.g. /blog/
-# url: "http://yourdomain.com" # the base hostname & protocol for your site
-# twitter_username: jekyllrb
-github_username:  Gaohaoyang
-permalink: /:year/:month/:day/:title/
+name: Xixia
+description: Welcome to Xixia！
 
-# Build settings
+# url is currently only used only for the RSS feed in feed.xml
+url: https://github.com/zxixia/jekyll-xixia
+
+# baseurl will often be '', but for a project page on gh-pages, it needs to
+# be the project name.
+# *** IMPORTANT: If your local "jekyll serve" throws errors change this to '' or
+#     run it like so: jekyll serve --baseurl=''
+baseurl: '/jekyll-xixia'
+## default date_format
+date_format: 
+  title: "%B-%-d-%Y"
+  archive: "%b"
+  categories: "%b-%Y"
+  tag: "%b-%Y"
+# Language
+lan: "en" 
+
+paginate: 10
+
+highlighter: rouge
 markdown: kramdown
+gems: ['jekyll-paginate']
 
-# highlight
-# 本地用rouge, github上用pygments
-# highlighter: pygments
-# highlighter: rouge
-# highlighter: false
+exclude: ['README.md', 'LICENSE', "*.bak"]
