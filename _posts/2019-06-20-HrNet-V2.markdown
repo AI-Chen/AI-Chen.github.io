@@ -1,8 +1,8 @@
 ﻿---
 layout: post
 title: HrNet V2总结
-categories: Other
-tags: Other
+categories: 语义分割优秀论文阅读
+tags: 语义分割优秀论文阅读
 author: Chen
 description: HrNet V2总结
 ---
