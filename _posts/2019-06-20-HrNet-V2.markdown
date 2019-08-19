@@ -25,7 +25,7 @@ description: HrNet V2总结
 ### 2、HrNet V2方法概述
 #### 2.1、HrNet V2框架
 &emsp;&emsp;HrNet通过连接并行的不同分辨率表示和重复进行多尺度融合来维持高分辨率表示，由此产生的高分辨率表示不仅信息丰富而且空间精确。HrNet V2对HrNet进行了简单的修改。此修改增加了较小的开销，但是有着更强的高分辨率表示。如下图所示是HrNet V2的整体框架：
-![HrNet V2框架](../assets/images/HrNet/HrNet2.JPG)<br>
+![HrNet V2框架](/assets/images/HrNet/HrNet2.JPG)<br>
 &emsp;&emsp;整个模块分为5个阶段：stem、stage1、stage2、stage3、stage4.在作者提供的开源代码中，将产生低分辨分支的功能以及重复的多尺度融合功能进行了分离，产生低分辨分支的功能在stage1、stage2、stage3阶段开头，重复的多尺度融合功能在stage1、stage2、stage3阶段的结尾。所以，在上图中，我将每一阶段的区分线画在了图中交叉线的中间。竖线1的左方是原始的HrNet表示。它直接输出stage3中的最上方的高分辨率表示，使其作为最后的heatmap。而HrNet V2则在其基础上添加了竖线1右边的部分。它首先将三个并行低分辨率子网的输出上采样到高分辨率子网的尺寸大小，然后通过简单的连接操作连接同样尺寸大小的四个分支的结果。最后将连接的结果通过1×1的卷积将通道数转变为语义分割的类别数目从而得到最后的结果。下面详细的介绍每一个阶段的具体处理步骤:<br>
 &emsp;&emsp;1）**stem**。stem中完成的三个箭头代表着3个不同的处理。前两个处理使用步长为2的3×3卷积操作将输入图像卷积两次。从而使得图像的高（H）和宽（W）变为H/4与W/4的大小。随后的第三个处理使用4个Basicblock或者bottleblock进行处理，起到提取特征的作用。随后得到的输出（大小为[H/4，W/4，256]）被输入stage1中。<br>
 &emsp;&emsp;2）**stage1**。首先在上一阶段的基础上产生一个低分辨率的分支。然后每一个分支分别利用4个Basicblock或者bottleblock进行特征提取。最后进行重复多尺度融合得到最后的输出。随后将得到的输出（大小分别为[H/4，W/4，32]，[H/8，W/8，64]）输入stage2中<br>
@@ -34,7 +34,7 @@ description: HrNet V2总结
 &emsp;&emsp;5）**stage4**。这个阶段的功能在本节开始时已经介绍，这里不加赘述
 #### 2.2、重复的多尺度融合
 &emsp;&emsp;我们以stage2阶段最后进行的重复多尺度融合融合为例进行介绍。其他阶段的多尺度融合原理与其一致。在stage2进行重复多尺度融合前，存在3个不同分辨率表示的分支。所以，该阶段的多尺度融合如下图所示，需要3个步骤：
-![重复的多尺度融合](../assets/images/HrNet/HrNet3.JPG)<br>
+![重复的多尺度融合](/assets/images/HrNet/HrNet3.JPG)<br>
 &emsp;&emsp;图中左边进行的处理是：首先将两个低分辨率表示的分支通过1×1的卷积变换到高分辨率同样的通道数。然后进行上采样，使得两个低分辨率表示的尺寸大小与高分辨率表示一致（H/4,W/4）。最后后，将三个不同分辨率表示求和得到了最后融合后的高分辨率表示。<br>
 &emsp;&emsp;图中中间进行的处理是：首先将高分辨率表示的分支通过步长为2的3×3的卷积变换到与中间分辨率表示的尺寸（H/8,W/8）与通道数一样大小。然后，将先后通过1×1卷积与上采样操作将最低分辨率表示同样调整到中间分辨率表示的尺寸与通道数一样大小。最后，将三个不同分辨率表示求和得到了最后融合后的中间分辨率表示。<br>
 &emsp;&emsp;图中右边进行的处理是：首先将两个高分辨率表示的分支通过步长为2的3×3的卷积变换到与最低分辨率表示的尺寸（H/16,W/16）与通道数一样大小。最后，将三个不同分辨率表示求和得到了最后融合后的最低分辨率表示。
@@ -43,11 +43,11 @@ description: HrNet V2总结
 ### 3、代码详解(代码开源地址：https://github.com/HRNet/HRNet-Semantic-Segmentation)
 #### 3.1、代码整体感知
 &emsp;&emsp;开源代码的整体结构如图所示：
-![重复的多尺度融合](../assets/images/HrNet/HrNet4.JPG)<br>
+![重复的多尺度融合](/assets/images/HrNet/HrNet4.JPG)<br>
 &emsp;&emsp;其中模型的编写以及超参数的设置分别存放于lib/models/seg_hrnet.py与lib/config/models.py中。seg_hrnet.py中包括Blockblock、bottleblock、HighResolutionModule、HighResolutionNet四个类以及一个封装好的名为conv3x3的函数用于3*3的卷积。其中HighResolutionNet定义了整个HrNet V2模块。HighResolutionModule是HighResolutionNet要调用的多尺度特征融合的模型。Blockblock、bottleblock是两个提取特征的模块。
 #### 3.2、Basic block与bottle block
 &emsp;&emsp;这两个模块是HrNet V2中要用到的特征提取模块。它们都是ResNet网络中所用到的经典的残差模块。<br>
-![重复的多尺度融合](../assets/images/HrNet/HrNet5.JPG)<br>
+![重复的多尺度融合]/assets/images/HrNet/HrNet5.JPG)<br>
 &emsp;&emsp;Basic block模块搭建结构如上图左边所示：
 >* 每一个3×3的卷积后都连接BN层进行批归一化；<br>
 * 进入残差连接前的3×3的卷积后只接入BN层而不使用Relu函数，避免求和之后的特征都为正数，保持了特征的多样化；<br>
@@ -138,7 +138,7 @@ description: HrNet V2总结
 * 外循环for i in range(num_branches if self.multi_scale_output else 1):表示如果分支数等于1，则不需要融合，不进入循环直接返回输入的分辨率表示。如果分支数大于1，则循环num_branches次（即循环次数为分支的数目）。
 * 进入内部循环之后：<br>
 &emsp;&emsp;如果 **j>i**。也就是说比i分支分辨率还要低的j分支之间的融合。这个时候就将j分支通过1×1的卷积（卷积后要用BN处理）以及上采样（方式为最邻近差值法）转换到与i分支的分辨率与通道数相同并将二者进行求和。当j>i条件的循环被全部执行完毕之后，所有的比i分辨率低的分支都与i进行了融合。<br>
-![j>i](../assets/images/HrNet/HrNet6.JPG)<br>
+![j>i](/assets/images/HrNet/HrNet6.JPG)<br>
 &emsp;&emsp;如果 **j=i**。此时由于与本身融和无意义，所以不做处理。<br>
 &emsp;&emsp;如果 **j<i**。与j>i的情况相反，这一部分的意义在于使得所有比i分支分辨率高的分支与其进行融合。这要求j分支要进行卷积运算使得其分辨率与通道数变得一致。j分支的分辨率调整要经过j-i次卷积运算。所以在这一部分再次出现了一个循环for k in range(i-j):来执行重复的卷积操作。由于最后一次卷积操作不执行Relu操作，所以在循环中用if语句将其单独挑选出来执行。
 
