@@ -14,7 +14,7 @@ description: HrNet V2总结
 ### 1、现有方法
 &emsp;&emsp;计算最后的heatmap表示有两条主线。第一种是从网络（例如，ResNet）输出的低分辨率表示中恢复高分辨率表示，并且可选地恢复中间中等分辨率表示，例如Hourglass ，SegNet，DeconvNet，U-Net，和encoder-decoder。 另一个是通过高分辨率卷积保持高分辨率表示，并用并行的低分辨率卷积加强高分辨率表示。 此外，空洞卷积用于替换分类网络中的一些跨步卷积和相关的常规卷积，以计算中等分辨率表示。<br>
 &emsp;&emsp;主线一的的典型方法包括以下4种：<br>
-![从低分辨率表示恢复高分辨率表示](//assets/images/HrNet/HrNet1.JPG)<br>
+![从低分辨率表示恢复高分辨率表示](/assets/images/HrNet/HrNet1.JPG)<br>
 &emsp;&emsp;* a:对称结构。如U-Net等。先下采样，再上采样，使用跳层连接恢复下采样的信息。<br>
 &emsp;&emsp;* b:级联金字塔。<br>
 &emsp;&emsp;* c:先下采样，再使用转置卷积进行上采样。没有跳层连接<br>
