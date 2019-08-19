@@ -1,13 +1,29 @@
-title: Chen'blog
-author: Chen Xiaoshu
-description: GIS、RS、CV、AI
+# Jekyll configuration
 
-highlighter: null
-permalink: /:title
+name: Xixia
+description: Welcome to Xixia！
 
-url:
-baseurl:
+# url is currently only used only for the RSS feed in feed.xml
+url: https://github.com/zxixia/jekyll-xixia
 
-# Custom options:
-# color_scheme: azul|ruby|amber|avocado
-# color_scheme: avocado
+# baseurl will often be '', but for a project page on gh-pages, it needs to
+# be the project name.
+# *** IMPORTANT: If your local "jekyll serve" throws errors change this to '' or
+#     run it like so: jekyll serve --baseurl=''
+baseurl: '/jekyll-xixia'
+## default date_format
+date_format: 
+  title: "%B-%-d-%Y"
+  archive: "%b"
+  categories: "%b-%Y"
+  tag: "%b-%Y"
+# Language
+lan: "en" 
+
+paginate: 10
+
+highlighter: rouge
+markdown: kramdown
+gems: ['jekyll-paginate']
+
+exclude: ['README.md', 'LICENSE', "*.bak"]
