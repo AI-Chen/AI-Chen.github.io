@@ -16,6 +16,7 @@
     <!--[if lt IE 9]>
        <script src="https://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
        <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.js"></script>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <![endif]-->
     <link href="/assets/css/main.css" rel="stylesheet" type="text/css">
 {% include isso-comments.html %}
@@ -43,14 +44,11 @@
                     <li class="active"><a href="/categories.html">{{ trans.categories }}</a></li>
                     <li class="active"><a href="/tags.html">{{ trans.tags }}</a></li>
                     <li class="active"><a href="/about.html">{{ trans.about }}</a></li>
+                    <!-- 不蒜子计数 -->
+                    <span id="busuanzi_container_site_pv" >| 总访问量 <span id="busuanzi_value_site_pv"></span> 次 </span>
+                    <span id="busuanzi_container_site_uv" >| 总访客数 <span id="busuanzi_value_site_uv"></span> 人 </span>
+                    <!-- 不蒜子计数 -->
                 </ul>
-            </div>
-            <div>
-                <!-- 不蒜子计数 -->
-                <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-                <span id="busuanzi_container_site_pv" >| 总访问量 <span id="busuanzi_value_site_pv"></span> 次 </span>
-                <span id="busuanzi_container_site_uv" >| 总访客数 <span id="busuanzi_value_site_uv"></span> 人 </span>
-                <!-- 不蒜子计数 -->
             </div>
         </div>
     </div>
