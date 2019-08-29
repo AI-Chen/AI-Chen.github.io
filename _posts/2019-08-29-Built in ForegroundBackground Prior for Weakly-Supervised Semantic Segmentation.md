@@ -13,9 +13,11 @@ description: 针对弱监督语义分割的固有前景/背景先验信息
 
 ### 1、Weakly-Supervised Semantic Segmentation的研究现状（截止2016）
 &emsp;&emsp;弱监督语义分割中的<b>“弱”体现在对标注要求的变弱</b>。从像素级的标注演变为image level、labeled bounding等相对而言不那么费时费力的弱标注。一般来讲，这种弱监督的标注比原始的像素级标注更容易获取。当我们将像素级标注的训练数据转变为labeled bounding甚至是更弱的image level的标注后。那么，一个关键性的问题便出现了：<b>How to build the relationship between image-level labels and pixels</b>。也就是说，如何去构建image-level的标签语义和像素点的关联，推断出图像所对应的segmentation mask，从而利用全卷积神经网络去学习分割模型。<br><br>
-<center>![image level label](/assets/images/Build prior/1.jpg) </center>
+
+![image level label](/assets/images/Build prior/1.jpg)
+
 <center>image level label：只需要把上面的图片打上狗的标签即可</center><br><br>
-<center>![labeled bounding](/assets/images/Build prior/2.jpg)</center>
+![labeled bounding](/assets/images/Build prior/2.jpg)
 <center>labeled bounding：将对象标上方框以及属于哪一类</center> <br><br>
 
 * Pathak, D., Shelhamer, E., Long, J., Darrell, T.: Fully convolutional multi-class multiple instance learning. In: ICLR Workshop. (2015)
@@ -38,9 +40,9 @@ description: 针对弱监督语义分割的固有前景/背景先验信息
 
 ### 3、模型详述
 &emsp;&emsp;模型采用在ImageNet数据集（for the task of object recognition）上预训练过的VGG16作为编码器。它在一个支路上以VGG16中con4与conv5后的激活作为输入。先分别在通道上做全局平均池化后将它们俩对象像素相加进行融合。融合后的图像送入全连接CRF（条件随机场）中做优化处理。最后上采样到原始图像大小得到一个相对优化的分割图mask。这个分割图在最终构造损失函数的时候至关重要。主干网络上在VGG16进行编码后直接将得到的map上采样到原始图像大小得到score map。最后score map与mask、image level label一起送入Loss function中计算loss以进行方向传播。整体的模型图与编码器详细结构如下：<br><br>
-<center>![模型结构](/assets/images/Build prior/3.jpg) </center>
+![模型结构](/assets/images/Build prior/3.jpg)
 <center>模型结构</center><br><br>
-<center>![编码器结构](/assets/images/Build prior/4.jpg)</center>
+![编码器结构](/assets/images/Build prior/4.jpg)
 <center>编码器结构</center> <br><br>
 &emsp;&emsp;这里会有几点疑惑：
 
@@ -51,7 +53,7 @@ description: 针对弱监督语义分割的固有前景/背景先验信息
 
 #### 3.1、通过conv4与conv5融合得到的是什么样的？它为什么能做掩模？
 &emsp;&emsp;可视化结果显示：VGG网络的前两个卷积层提取图像边缘。随着我们在网络中的深入，卷积层提取更高级别的功能。特别是，第三个卷积层激活表示对象形状。第四层表示完整对象的位置，第五层表示最具辨别力的对象部分。同时，观察这两个激活的融合结果也可以发现为什么要全连接CRF去优化它（直接融合后的图像存在大量噪声）。<br><br>
-<center>![可视化激活](/assets/images/Build prior/5.jpg) </center>
+![可视化激活](/assets/images/Build prior/5.jpg)
 <center>可视化结果</center><br><br>
 &emsp;&emsp;具体conv4与conv5的融合方式为：首先通过512个通道上的平均池操作将这两个层从3D张量（512×W×H）转换为2D矩阵（W×H）。 然后，我们通过简单的元素和将两个结果矩阵融合，并将得到的值在0和1之间缩放。
 &emsp;&emsp;至于全连接CRF，它的处理可以参考deeplab v1。不过这里的全连接CRF应该是可微分的。而可谓分的全连接CRF也早已经有了方法。
@@ -60,20 +62,20 @@ description: 针对弱监督语义分割的固有前景/背景先验信息
 #### 3.2、loss function是怎么构造的？
 &emsp;&emsp;这里的loss function分两个。一个重点在语义，一个重点在位置（这是这篇文章为什么能提升对象定位精度的关键点）
 ##### 3.2.1、语义的loss function
-<center>![语义的loss function](/assets/images/Build prior/6.jpg) </center>
+![语义的loss function](/assets/images/Build prior/6.jpg)
 <br><br>
 &emsp;&emsp;其中，L代表当前图中存在的类别。L上面加一横代表当前图中不存在的类别。有这样的划分是因为一张图中可能没有包括所有该数据集中存在的类别。![S](/assets/images/Build prior/8.jpg)，表示整个score map中含有k类对象的概率。由以下公式计算：<br><br>
-<center>![计算公式1](/assets/images/Build prior/9.jpg)</center>
+![计算公式1](/assets/images/Build prior/9.jpg)
 <br><br>
 &emsp;&emsp;这其中，![S](/assets/images/Build prior/11.jpg)表示（i，j）位置像素属于k类的概率。
 &emsp;&emsp;所以很显然，loss function中第一项是对网络预测对了当前图像中出现的对象的奖励。![S](/assets/images/Build prior/8.jpg)越大，loss越小。而第二项则是对当前图像没有出现的对象而网络却预测出了的一种惩罚。![S](/assets/images/Build prior/8.jpg)越大，loss越大。
 
 ##### 3.2.1、位置的loss function
-<center>![位置的loss function](/assets/images/Build prior/7.jpg) </center>
+![位置的loss function](/assets/images/Build prior/7.jpg)
 <center>可视化结果</center><br><br>
 其中：<br><br>
-<center>![计算公式2](/assets/images/Build prior/12.jpg)</center><br><br>
-<center>![计算公式1](/assets/images/Build prior/13.jpg)</center><br><br>
+![计算公式2](/assets/images/Build prior/12.jpg)<br><br>
+![计算公式1](/assets/images/Build prior/13.jpg)<br><br>
 &emsp;&emsp;我们让![S](/assets/images/Build prior/14.jpg)表示mask中位置（i，j）处的值。当当前像素为前景时，它的值为1，反之则为0.同时loss function中|M|表示前景的像素点个数。同样，加一横表示背景的像素点个数。
 &emsp;&emsp;很显然，第一项与第二项仍然是对预测正确的奖励；第三项是对预测错误的惩罚。
 
