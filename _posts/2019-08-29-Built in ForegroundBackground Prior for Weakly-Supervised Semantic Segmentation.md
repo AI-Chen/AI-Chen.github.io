@@ -55,8 +55,8 @@ description: 针对弱监督语义分割的固有前景/背景先验信息
 &emsp;&emsp;可视化结果显示：VGG网络的前两个卷积层提取图像边缘。随着我们在网络中的深入，卷积层提取更高级别的功能。特别是，第三个卷积层激活表示对象形状。第四层表示完整对象的位置，第五层表示最具辨别力的对象部分。同时，观察这两个激活的融合结果也可以发现为什么要全连接CRF去优化它（直接融合后的图像存在大量噪声）。<br><br>
 ![可视化激活](/assets/images/Build prior/5.jpg)
 <center>可视化结果</center><br><br>
-&emsp;&emsp;具体conv4与conv5的融合方式为：首先通过512个通道上的平均池操作将这两个层从3D张量（512×W×H）转换为2D矩阵（W×H）。 然后，我们通过简单的元素和将两个结果矩阵融合，并将得到的值在0和1之间缩放。
-&emsp;&emsp;至于全连接CRF，它的处理可以参考deeplab v1。不过这里的全连接CRF应该是可微分的。而可谓分的全连接CRF也早已经有了方法。
+&emsp;&emsp;具体conv4与conv5的融合方式为：首先通过512个通道上的平均池操作将这两个层从3D张量（512×W×H）转换为2D矩阵（W×H）。 然后，我们通过简单的元素和将两个结果矩阵融合，并将得到的值在0和1之间缩放。<br>
+&emsp;&emsp;至于全连接CRF，它的处理可以参考deeplab v1。不过这里的全连接CRF应该是可微分的。而可谓分的全连接CRF也早已经有了方法。<br>
 &emsp;&emsp;最后，融合结果为什么能做掩模也一目了然（因为它区分了前景和背景）。
 
 #### 3.2、loss function是怎么构造的？
@@ -67,7 +67,7 @@ description: 针对弱监督语义分割的固有前景/背景先验信息
 &emsp;&emsp;其中，L代表当前图中存在的类别。L上面加一横代表当前图中不存在的类别。有这样的划分是因为一张图中可能没有包括所有该数据集中存在的类别。![S](/assets/images/Build prior/8.jpg)，表示整个score map中含有k类对象的概率。由以下公式计算：<br><br>
 ![计算公式1](/assets/images/Build prior/9.jpg)
 <br><br>
-&emsp;&emsp;这其中，![S](/assets/images/Build prior/11.jpg)表示（i，j）位置像素属于k类的概率。
+&emsp;&emsp;这其中，![S](/assets/images/Build prior/11.jpg)表示（i，j）位置像素属于k类的概率。<br>
 &emsp;&emsp;所以很显然，loss function中第一项是对网络预测对了当前图像中出现的对象的奖励。![S](/assets/images/Build prior/8.jpg)越大，loss越小。而第二项则是对当前图像没有出现的对象而网络却预测出了的一种惩罚。![S](/assets/images/Build prior/8.jpg)越大，loss越大。
 
 ##### 3.2.1、位置的loss function
@@ -76,7 +76,7 @@ description: 针对弱监督语义分割的固有前景/背景先验信息
 其中：<br><br>
 ![计算公式2](/assets/images/Build prior/12.jpg)<br><br>
 ![计算公式1](/assets/images/Build prior/13.jpg)<br><br>
-&emsp;&emsp;我们让![S](/assets/images/Build prior/14.jpg)表示mask中位置（i，j）处的值。当当前像素为前景时，它的值为1，反之则为0.同时loss function中|M|表示前景的像素点个数。同样，加一横表示背景的像素点个数。
+&emsp;&emsp;我们让![S](/assets/images/Build prior/14.jpg)表示mask中位置（i，j）处的值。当当前像素为前景时，它的值为1，反之则为0.同时loss function中|M|表示前景的像素点个数。同样，加一横表示背景的像素点个数。<br>
 &emsp;&emsp;很显然，第一项与第二项仍然是对预测正确的奖励；第三项是对预测错误的惩罚。
 
 ### 4、总结
