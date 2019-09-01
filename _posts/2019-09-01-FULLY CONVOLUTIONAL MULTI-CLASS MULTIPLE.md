@@ -14,13 +14,13 @@ description: 基于FCN的多类别多示例学习
 
 ### 1、关键点
 * 在FCN中加入了MIL的思想，使得MIL可以在网络中做成端到端的表示，这消除了实例化实例标签假设的需要。
-* <font color=red><b>提出了一种像素级别的多类别MIL Loss。</b></font>(这是这篇文章的key point)
+* <b>提出了一种像素级别的多类别MIL Loss。</b>(这是这篇文章的key point)
 * 从图像级别的标注获得了语义分割的结果
 
 ---
 
 ### 2、模型结构简述
-<div align=center>
+
 ![FCN模型](/assets/images/MILLoss/1.jpg)
 
 &emsp;&emsp;如上所示是FCN的整个模型示意图。至于FCN的原理，这里不加赘述。我们知道，这篇文章使用的数据只有图像级别的标注。所以，由于没有像素级别的标注，无法按照常规的FCN的思想采用交叉熵损失函数计算Loss，直接反卷积到输入图片的大小意义不大。那么作者是怎么解决这个问题的？既然直接反卷积到输入图片大小意义不大的话，作者就直接去掉了FCN中反卷积的部分（即图中红色方框部分），保留了编码器部分（即图中蓝色方框部分）。这样的操作之后，模型经过编码器产生一张heatmap（大小为N*H*W,N为该数据集的class的数目)。<br>
@@ -30,7 +30,7 @@ description: 基于FCN的多类别多示例学习
 
 ### 3、MIL Loss
 &emsp;&emsp;我们直接将原文中的两个公式贴在这里：
-<div align=center>
+
 ![Loss](/assets/images/MILLoss/2.jpg)
 
 &emsp;&emsp;第一个公式做了如下工作：<br>
@@ -43,10 +43,10 @@ description: 基于FCN的多类别多示例学习
 
 ### 4、实际效果
 &emsp;&emsp;先不看实际的效果图你也能猜到效果不会很好。因为我们在通过FCN学习到的语义信息（图像级别的标记）是不对位置有要求的。所以，分割图的边界形状肯定很糟糕。我们具体来看一下：
-<div align=center>
+
 ![Loss](/assets/images/MILLoss/3.jpg)
 
-<div align=center>
+
 ![Loss](/assets/images/MILLoss/4.jpg)
 
 &emsp;&emsp;结果与猜测一致。对于边界的精度肯定做不到全监督那么好。但是这是第一次尝试，为弱监督语义分割开了一个好头。这是它的意义所在。
