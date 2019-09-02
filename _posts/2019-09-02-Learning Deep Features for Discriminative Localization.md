@@ -1,7 +1,7 @@
 ---
 layout: post
-title: FULLY CONVOLUTIONAL MULTI-CLASS MULTIPLE
-categories: Learning Deep Features for Discriminative Localization
+title: Learning Deep Features for Discriminative Localization
+categories: Weakly-Supervised-Semantic-Segmentation
 tags: 方法
 author: Chen
 description: 尽管只在图像级别的标签上训练，CNN也有着显著的对象定位能力
