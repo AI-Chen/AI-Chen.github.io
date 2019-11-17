@@ -1,0 +1,145 @@
+---
+layout: post
+title: 处理pascal voc2012及其增强数据集以用于弱监督语义分割
+categories: Weakly-Supervised-Semantic-Segmentation
+tags: 方法
+author: Chen
+description: 处理pascal voc2012及其增强数据集以用于弱监督语义分割
+---
+
+## <center>  弱监督语义分割系列-2、处理pascal voc2012及其增强数据集以用于弱监督语义分割 </center>
+** 摘要： ** 在这个系列的第一篇文章中我们提到了弱监督语义分割的几个研究方向以及汇总了近五年各大顶会、顶刊上发表的弱监督语义分割论文。我们知道，没有数据就没有深度学习。弱监督也是一样。所以，在这篇文章中，我们将为你介绍在弱监督语义分割中最常用的数据集-pascal voc 2012及其增强版本。并在此基础上进一步介绍如何处理这一数据集使其适用于弱监督语义分割。
+### 一、Pascal VOC 2012及其增强数据集简介
+&emsp;&emsp; 从2005年到2012年每年都会举行一场[国际顶级的计算机视觉竞赛Pascal VOC挑战赛](http://host.robots.ox.ac.uk:8080/)。这个比赛每年都会吸引无数个人、研究团队与公司参加。而PASCAL VOC就是为这个比赛提供了一整套标准化的优秀的数据集。<br>
+&emsp;&emsp; 作为世界最权威的三大视觉挑战赛之一，pascal voc数据集标注质量高、场景复杂、目标多样、检测难度大，是快速检验算法有效性的首选。<br>
+&emsp;&emsp;而Pascal voc 2012作为该比赛最后一次举行时所使用的数据集，在前几年比赛的数据集的基础上又补充了很多数据，可以用于分类、检测和分割等任务。原始的Pascal voc 2012数据集仅仅包含1464个训练数据集，然而在很多paper上，大家都使用了包含10582个训练集的增强版数据集进行训练。
+### 二、Pascal voc 2012及其增强数据集的下载与详细讲解
+&emsp;&emsp;VOC 2012数据集分为20类，算上背景一共21类。以下是具体类别：
+
+* 人：person
+* 动物：bird, cat, cow, dog, horse, sheep
+* 交通工具：aeroplane, bicycle, boat, bus, car, motorbike, train
+* 室内用具：bottle, chair, dining table, potted plant, sofa, tv/monitor
+
+#### 2.1、[PASCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar) <br>
+下载解压后，目录列表如下图：<br><br>
+![文件目录](/assets/images/pascalvoc/pascal 2012目录.PNG)<br><br>
+这里我们只介绍与我们相关的<br>
+* <b>JPEGImages：<br><br></b>
+&emsp;&emsp;JPEGImages文件夹中包含了PASCAL VOC所提供的所有的图片信息（包含17125张彩色图片，但只有一部分(2913张)是用于分割的）。这些图像都是以“年份_编号.jpg”格式命名的。图片的像素尺寸大小不一,但是基本上都在500×375或者375×500左右。在实际应用中，通常将它们都resize为321×321。<br><br>![](/assets/images/pascalvoc/图片示例.PNG)<br><br>
+* <b>SegmentationClass：<br><br></b>
+&emsp;&emsp;语义分割任务中用到的label图片，PNG格式，共2913张，与原图的每一张图片相对应。<br><br>
+![](/assets/images/pascalvoc//gt.PNG)<br><br>
+* <b>Annotations：<br><br></b>
+&emsp;&emsp;这个文件夹内主要存放了数据的标签，xml格式。里面包含了每张图片的bounding box信息，主要用于目标检测。但是弱监督度语义分割很多方法中需要用到每一个图片的image level label。这个label可以从这个文件夹中获取<br>
+
+
+#### 2.2、[Pascal VOC增强数据集](https://pan.baidu.com/s/1BUdf6O1qi5SMT4FNwZQOSg)
+提取码：fg3e<br>
+下载解压后，目录列表如下图：<br><br>![目录](/assets/images/pascalvoc/增强 目录.PNG)<br><br>
+
+* <b>img：</b>增强版的原图，共11355张图片
+* <b>cls：</b>用于语义分割的label，共11355个.mat文件，每个.mat文件对应一张原图
+* <b>inst：</b>用于实例分割的label，也是11355个.mat文件。弱监督所需要的image level label从此处获取。
+
+### 3、处理数据以用于弱监督（处理好的数据下载地址：[传送门](https://pan.baidu.com/s/11VLZc3ypUSlIshK2XS0jsw)
+&emsp;&emsp;首先我们先来想一下弱监督语义分割使用image level label需要什么数据。其实只要稍微思考一下就能的结论：1）原始RGB图片；2）ground truth图片；3）image level级别的标签。此外，几乎所有的论文中使用到的都是上述两个数据集的融合版本。因为我们在获取弱监督所需要的数据之前需要先将两个数据集进行合并。目前已有数据文件如下所示：
+
+* VOCdevkit/VOC2012为原始PASCAL VOC 2012数据集：<br><br>
+1)images数据集的文件名为：JPEGImages，共17125张图片（其中2913张用于分割）；<br>
+2)ground truth数据集文件名为：SegmentationClass，共2913张图片；<br>
+3)image level label数据集文件名为：Annotations，从对应上述2913张图片的.xml文件中获取image level label。<br><br>
+* benchmark_RELEASE为增强数据集：<br><br>
+1)images数据集的文件名为：img，共11355张图片<br>
+2)labels数据集文件名为：cls，共11355张图片<br>
+3)image level label数据集文件名为：inst,从对应上述2913张图片的.mat文件中获取image level label<br><br>
+&emsp;&emsp;将JPEGImages中用于分割的2913张图片拷贝到img目录下；将SegmentationClass中的2913张图片拷贝到cls目录下；将Annotations中的2913个.xml拷贝到inst目录下，如遇到重复，替换即可。按照这个逻辑，写个简单的脚本我们便可以实现两个数据集的合并。我们这里只提供几个关键的函数，剩下如何实现上述逻辑想试一下的同学可以试一下。（不想动手的同学直接可以下数据就好啦）：
+
+```
+shutil.copy(src,dst)
+#shutil库中的一个函数。将src所代表的文件复制到dst文件夹中。如遇见重复则会替换。
+```  
+
+&emsp;&emsp;现在我们有了原图，有了gt，只剩下具体从.xml与.mat文件中取出对应图片所属的image level label就好了。我们先看一下.xml文件的结构，以图片2007_000027为例：
+
+```
+<annotation>
+	<folder>VOC2012</folder>
+	<filename>2007_000027.jpg</filename>
+	<source>
+		<database>The VOC2007 Database</database>
+		<annotation>PASCAL VOC2007</annotation>
+		<image>flickr</image>
+	</source>
+	<size>
+		<width>486</width>
+		<height>500</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>person</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>174</xmin>
+			<ymin>101</ymin>
+			<xmax>349</xmax>
+			<ymax>351</ymax>
+		</bndbox>
+		<part>
+			<name>head</name>
+			<bndbox>
+				<xmin>169</xmin>
+				<ymin>104</ymin>
+				<xmax>209</xmax>
+				<ymax>146</ymax>
+			</bndbox>
+		</part>
+		<part>
+			<name>hand</name>
+			<bndbox>
+				<xmin>278</xmin>
+				<ymin>210</ymin>
+				<xmax>297</xmax>
+				<ymax>233</ymax>
+			</bndbox>
+		</part>
+		<part>
+			<name>foot</name>
+			<bndbox>
+				<xmin>273</xmin>
+				<ymin>333</ymin>
+				<xmax>297</xmax>
+				<ymax>354</ymax>
+			</bndbox>
+		</part>
+		<part>
+			<name>foot</name>
+			<bndbox>
+				<xmin>319</xmin>
+				<ymin>307</ymin>
+				<xmax>340</xmax>
+				<ymax>326</ymax>
+			</bndbox>
+		</part>
+	</object>
+</annotation>
+```  
+
+&emsp;&emsp;可以观察到图片的label信息就存储在<object>下的<name>标签中。知道这一点后，写一个简单的代码便可以取出当前图片对应的image level label了。值得注意的是，可能同一个xml文件中，两个不同<object>下的<name>可能相同。此时，我们只取一次这个值就可以了（这个很好理解，一张图片中当然可能出现两个不同的人）。对于.mat的处理可以类比xml。同样，我们这里只提供关键的点：
+
+```  
+import xml.dom.minidom
+import scipy.io as sio
+# 打开xml文件
+dom = xml.dom.minidom.parse(xmlPath)
+
+# 打开mat文件
+data = sio.loadmat('train_data.mat')
+data = data['data']
+
+```  
+&emsp;&emsp;最后，我们需要划分训练集与验证集并生成对应的索引文件。下面是处理好的train数据集目录,val与train一致.gts中存储着ground truth，images中存储着原图，labels中存着.xml与.mat文件。path_list中存放着train中所有图片的索引以及与每一张图片对应的image level的label。至此，数据集的处理完成，可以愉快的用这些数据训练你的模型啦。<br><br>
+<center> ![](/assets/images/pascalvoc/train.PNG)
