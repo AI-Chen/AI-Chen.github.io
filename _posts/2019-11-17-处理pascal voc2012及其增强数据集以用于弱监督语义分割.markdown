@@ -142,4 +142,4 @@ data = data['data']
 
 ```  
 &emsp;&emsp;最后，我们需要划分训练集与验证集并生成对应的索引文件。下面是处理好的train数据集目录,val与train一致.gts中存储着ground truth，images中存储着原图，labels中存着.xml与.mat文件。path_list中存放着train中所有图片的索引以及与每一张图片对应的image level的label。至此，数据集的处理完成，可以愉快的用这些数据训练你的模型啦。<br><br>
-<center> ![](/assets/images/pascalvoc/train.PNG)
+ ![](/assets/images/pascalvoc/train.PNG)
