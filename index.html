@@ -1,47 +1,76 @@
----
-layout: default
----
-{% assign trans = site.data.values[site.lan] %}
-{% for post in paginator.posts %}
-<div class="well article">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <header class="bg-blue-600 text-white py-6">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-3xl font-bold">我的个人主页</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="#about" class="hover:text-gray-200">关于我</a></li>
+                    <li><a href="#projects" class="hover:text-gray-200">项目</a></li>
+                    <li><a href="#contact" class="hover:text-gray-200">联系</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <span class="post-date">
-        <!--
-        {% assign d = post.date | date: "%d" | plus:'0' %}
-        {{ post.date | date: "%B" }}
-        {% case d %}
-        {% when 1 or 21 or 31 %}{{ d }}st,
-        {% when 2 or 22 %}{{ d }}nd,
-        {% when 3 or 23 %}{{ d }}rd,
-        {% else %}{{ d }}th,
-        {% endcase %}
-        {{ post.date | date: "%Y" }}
-        -->
-        {% assign date_format = site.date_format.title %}
-        {{ post.date | date: date_format }}
-    </span>
-    
-    <h2>
-        <a href="{{ post.url }}">{{ post.title }}</a>
-    </h2>
-    
-    <div class="post-description">
-        {{ post.description }}
-    </div>
-    
-</div>
-{% endfor %}
+    <main class="container mx-auto px-4 py-10">
+        <!-- 关于我 -->
+        <section id="about" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">关于我</h2>
+            <p class="text-gray-700 leading-relaxed">
+                你好！我是[你的名字]，一名专注于图学习领域的研究者。我对机器学习、数据科学和人工智能充满热情，
+                致力于探索图神经网络在不同场景中的应用。
+            </p>
+        </section>
 
-<div class="pagination">
-  {% if paginator.previous_page %}
-      {% if paginator.previous_page == 1 %}
-        <a class="btn btn-default" href="/index.html" class="previous">Newer</a>
-      {% else %}
-        <a class="btn btn-default" href="/page{{ paginator.previous_page }}" class="previous">Newer</a>
-      {% endif %}
-  {% endif %}
-  <span class="page_number ">{{ trans.page }}: {{ paginator.page }} of {{ paginator.total_pages }}</span>
-  {% if paginator.next_page %}
-    <a class="btn btn-default" href="/page{{ paginator.next_page }}" class="next">Older</a>
-  {% endif %}
-</div>
+        <!-- 项目 -->
+        <section id="projects" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">我的项目</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 项目卡片示例 -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="text-xl font-semibold mb-2">项目名称</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        这是一个简要的项目描述，突出项目的核心功能或成果。
+                    </p>
+                    <a href="#" class="text-blue-500 hover:underline">查看详情</a>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="text-xl font-semibold mb-2">项目名称</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        这是一个简要的项目描述，突出项目的核心功能或成果。
+                    </p>
+                    <a href="#" class="text-blue-500 hover:underline">查看详情</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系 -->
+        <section id="contact">
+            <h2 class="text-2xl font-bold mb-4">联系我</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                如果你对我的研究感兴趣或者希望合作，请通过以下方式联系我：
+            </p>
+            <ul class="list-disc list-inside text-gray-700">
+                <li>邮箱: <a href="mailto:your_email@example.com" class="text-blue-500 hover:underline">your_email@example.com</a></li>
+                <li>GitHub: <a href="https://github.com/your_username" class="text-blue-500 hover:underline">https://github.com/your_username</a></li>
+                <li>LinkedIn: <a href="https://linkedin.com/in/your_username" class="text-blue-500 hover:underline">https://linkedin.com/in/your_username</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>© 2025 [你的名字]. 保留所有权利。</p>
+        </div>
+    </footer>
+</body>
+</html>
