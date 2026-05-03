@@ -5,6 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xiaoshu Chen</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .pub-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.06);
+            min-height: 14rem;
+        }
+        .pub-card__bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            transition: opacity 0.35s ease, transform 0.45s ease;
+        }
+        .pub-card:hover .pub-card__bg {
+            opacity: 0.52;
+            transform: scale(1.05);
+        }
+        .pub-card__veil {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(248, 250, 252, 0.9) 100%);
+            pointer-events: none;
+        }
+        .pub-card__body {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
     <header class="bg-blue-600 text-white py-6">
@@ -65,81 +97,115 @@
         <!-- 项目 -->
         <section id="projects" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">Selected Publications</h2>
+            <!-- 背景图：将 imgs/publications/*.svg 换成同路径下的论文框架图 PNG/JPG 即可 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- 项目卡片示例 -->
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2026 ICML</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>ImgCoT: Compressing Long Chain of Thought into Compact Visual Tokens for Efficient Reasoning of Large Language Model</b><br>
-                        <b>X Chen</b>, S Zhou, K Liang, T Zhou, Y Wang, Y Gao,X Liu
-                    </p>
-                    <a href="https://arxiv.org/abs/2601.22730" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/imgcot.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2026 ICML</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>ImgCoT: Compressing Long Chain of Thought into Compact Visual Tokens for Efficient Reasoning of Large Language Model</b><br>
+                            <b>X Chen</b>, S Zhou, K Liang, T Zhou, Y Wang, Y Gao,X Liu
+                        </p>
+                        <a href="https://arxiv.org/abs/2601.22730" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2025 EMNLP</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Skip-thinking: Chunk-wise chain-of-thought distillation enable smaller language models to reason better and faster</b><br>
-                        <b>X Chen</b>, S Zhou, Ke Liang, X Sun, X Liu
-                    </p>
-                    <a href="https://arxiv.org/pdf/2505.18642" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/emnlp-skip-thinking.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2025 EMNLP</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Skip-thinking: Chunk-wise chain-of-thought distillation enable smaller language models to reason better and faster</b><br>
+                            <b>X Chen</b>, S Zhou, Ke Liang, X Sun, X Liu
+                        </p>
+                        <a href="https://arxiv.org/pdf/2505.18642" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2025 IEEE TNNLS</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Distilling Reasoning Ability from Large Language Models with Adaptive Thinking</b><br>
-                        <b>X Chen</b>, S Zhou, Ke Liang, X Liu
-                    </p>
-                    <a href="https://arxiv.org/pdf/2404.09170" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/tnnls-adaptive.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2025 IEEE TNNLS</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Distilling Reasoning Ability from Large Language Models with Adaptive Thinking</b><br>
+                            <b>X Chen</b>, S Zhou, Ke Liang, X Liu
+                        </p>
+                        <a href="https://arxiv.org/pdf/2404.09170" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2025 IEEE TKDE</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Thinking on Context: Inductive Relation Prediction Guided by the Reasoning Ability of Large Language Models</b><br>
-                        <b>X Chen</b>, S Zhou, Ke Liang, J Wu, X Liu, D Li, K Lu
-                    </p>
-                    <a href="https://ojs.aaai.org/index.php/AAAI/article/view/33672" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/tkde-thinking-context.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2025 IEEE TKDE</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Thinking on Context: Inductive Relation Prediction Guided by the Reasoning Ability of Large Language Models</b><br>
+                            <b>X Chen</b>, S Zhou, Ke Liang, J Wu, X Liu, D Li, K Lu
+                        </p>
+                        <a href="https://ojs.aaai.org/index.php/AAAI/article/view/33672" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2026 TKDE</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Efficient LLM-Based Subgraph Retrieval for Multi-Hop Knowledge Base Question Answering</b><br>
-                        D Yuan, S Zhou, <b>X Chen</b>, H Chen
-                    </p>
-                    <a href="https://ieeexplore.ieee.org/abstract/document/11458678" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/tkde-subgraph.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2026 TKDE</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Efficient LLM-Based Subgraph Retrieval for Multi-Hop Knowledge Base Question Answering</b><br>
+                            D Yuan, S Zhou, <b>X Chen</b>, H Chen
+                        </p>
+                        <a href="https://ieeexplore.ieee.org/abstract/document/11458678" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2025 IJCAI</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Soft Reasoning Paths for Knowledge Graph Completion</b><br>
-                        Y Hou, S Zhou, K Liang, L Meng, <b>X Chen</b>, K Xu, S Wang, X Liu, J Huang
-                    </p>
-                    <a href="https://arxiv.org/pdf/2505.03285" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/ijcai-soft-reasoning.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2025 IJCAI</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Soft Reasoning Paths for Knowledge Graph Completion</b><br>
+                            Y Hou, S Zhou, K Liang, L Meng, <b>X Chen</b>, K Xu, S Wang, X Liu, J Huang
+                        </p>
+                        <a href="https://arxiv.org/pdf/2505.03285" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2025 AAAI Oral</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Knowledge Graph Completion with Relation-Aware Anchor Enhancement</b><br>
-                        D Yuan, S Zhou, <b>X Chen</b>, D Wang, Ke Liang, X Liu, J Huang
-                    </p>
-                    <a href="#" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/aaai-kge.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2025 AAAI Oral</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Knowledge Graph Completion with Relation-Aware Anchor Enhancement</b><br>
+                            D Yuan, S Zhou, <b>X Chen</b>, D Wang, Ke Liang, X Liu, J Huang
+                        </p>
+                        <a href="#" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2022 IEEE TGRS</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Unsupervised Domain Adaptation for Remote Sensing Image Semantic Segmentation Using Region and Category Adaptive Domain Discriminator</b><br>
-                        <b>X Chen</b>, S Pan, Y Chong
-                    </p>
-                    <a href="https://ieeexplore.ieee.org/abstract/document/9864210" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/tgrs-domain.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2022 IEEE TGRS</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Unsupervised Domain Adaptation for Remote Sensing Image Semantic Segmentation Using Region and Category Adaptive Domain Discriminator</b><br>
+                            <b>X Chen</b>, S Pan, Y Chong
+                        </p>
+                        <a href="https://ieeexplore.ieee.org/abstract/document/9864210" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
-
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-xl font-semibold mb-2">2021 Neurocomputing </h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <b>Erase then grow: Generating correct class activation maps for weakly-supervised semantic segmentation</b> <br>
-                        Y Chong, <b>X Chen</b>, Y Tao, S Pan
-                    </p>
-                    <a href="https://www.sciencedirect.com/science/article/pii/S092523122100661564210" class="text-blue-500 hover:underline">Paper</a>
+                <div class="pub-card">
+                    <div class="pub-card__bg" style="background-image: url('imgs/publications/neurocomputing-erase.png');" role="presentation"></div>
+                    <div class="pub-card__veil" aria-hidden="true"></div>
+                    <div class="pub-card__body p-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900">2021 Neurocomputing</h3>
+                        <p class="text-gray-800 leading-relaxed mb-4">
+                            <b>Erase then grow: Generating correct class activation maps for weakly-supervised semantic segmentation</b><br>
+                            Y Chong, <b>X Chen</b>, Y Tao, S Pan
+                        </p>
+                        <a href="https://www.sciencedirect.com/science/article/pii/S092523122100661564210" class="text-blue-600 font-medium hover:underline">Paper</a>
+                    </div>
                 </div>
             </div>
         </section>
